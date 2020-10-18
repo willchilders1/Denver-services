@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8 />
+  <title>Important Locations in Denver, CO</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <!-- Is the is the latest version of Leaflet? -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: rgb(43, 43, 43);
+      font-family: "Lato", sans-serif;
+      font-size: 100%;
+      font-weight: 300;
+      color: rgb(172, 172, 172);
+    }
+
+    header,
+    footer,
+    section {
+      padding: 6px 10%;
+      margin: 0 auto;
+      width: 80%
+    }
+    a {
+      color:#5262f3;
+      font-weight: normal;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+    /* h1, h2 {
+      text-align: center;
+    } */
+    h1 {
+      display: inline-block;
+      margin-right: 20px;
+      color: rgb(190, 190, 190);
+      font-size: 3.5em;
+      font-weight: 700;
+    }
+
+    h2 {
+      display: inline-block;
+      color: rgba(255, 200, 0, 0.8);
+      letter-spacing: 0.05em;
+      margin-top: 0px;
+      font-weight: 300;
+      text-transform: uppercase;
+      border-bottom: 1px dotted rgba(255, 200, 0, 0.5);
+    }
+
+    .img-fill {
+      width: 100%;
+      height: 540px;
+      margin: 10px auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 540px;
+      margin: 10px auto;
+    }
+
+    p {
+      font-size: 1em;
+      color: rgba(170, 170, 170);
+      ;
+      font-weight: 300;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Services in Denver, CO</h1>
+    <h2>Fire Stations, Food Stores and After-school Programs</h2>
+  </header>
+<section>
+  <div id='map'></div>
+
+    <p>Fire stations, food stores, and community programs are just some of the civic services available in Denver. Being a major metropolitan area,
+      the city boasts an extensive selection of after school programs throughout. Also available are an abundance of food stores and fire stations
+      placed strategically around the city.</p>
+      <img src="http://www.10-75.net/imagesxi/DSC_3824.jpg" alt="Fire Engine"
+      class="img-fill"><br>
+      Denver Fire Department Engine: 
+      <a href="https://www.denvergov.org/content/denvergov/en/fire-department-home/contact-us/fire-stations.html">Denver Fire Department</a><br>
+      Photo provided by Eli Gill, <a href="http://www.10-75.net/apparatus/co/denverfd/hm1.html">10-75.net</a>
+    </section>
+      <footer>
+        <p>Map authored by Will Childers for University of Kentucky MAP 672</p>
+        <hr>
+    
+        <a href="https://newmapsplus.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-nmp-75px-h-gray.png"
+            alt="University of Kentucky Geography">
+        </a>
+    
+        <a href="https://uky-gis.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-geography-75px-h.png"
+            alt="University of Kentucky Geography">
+        </a>
+      </footer>
+  <!-- Is the is the latest version of Leaflet? -->
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <script src="data/denver-fire-stations.js"></script>
+  <script src="data/denver-food-stores.js"></script>
+  <script src="data/after-school-programs.js"></script>
+  <script>
+    var map = L.map('map', {
+      center: [39.7256, -104.9252],
+      zoom: 11,
+    });
+
+    var tiles = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+    var commonStyles = {
+      weight: 1,
+      stroke: false,
+      fillOpacity: 1
+    }
+    // Define the desired layers and their colors to place 
+    // as JS object
+    // var layerInfo = {
+    //   programLayer: {
+    //     source: programs,
+    //     color: '#1f78b4'
+    //   },
+    //   stationLayer: {
+    //     source: stations,
+    //     color: '#a6cee3'
+    //   },
+    //   storeLayer: {
+    //     source: stores,
+    //     color: '#a6cee3'
+    //   }
+    // };
+    console.log(programs);
+
+    // Build empty JS object
+    var geoJsonLayers = {};
+
+    // Loop through first object
+    // for (var layer in layerInfo) {
+      // Populate the second object with all features that
+      programLayer = L.geoJson(programs, {
+        // we convert to a layer
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, commonStyles);
+          console.log(programLayer);
+        },
+
+        // exist in our first object
+        filter: function (feature) {
+          console.log(feature);
+          if (feature.properties.ORGANIZATI) {
+            return feature;
+          }
+        },
+        style: function (feature) {
+          return {
+            color: 'blue',
+            fillColor: 'blue',
+            stroke: false,
+            radius: 5
+          }
+        },
+        onEachFeature: function (feature, layer) {
+          layer.bindTooltip(`<b>${feature.properties.ORGANIZATI}</b>`)
+        }
+      }).addTo(map);
+      storeLayer = L.geoJson(stores, {
+        // we convert to a layer
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, commonStyles);
+        },
+        // exist in our third object
+        filter: function (feature) {
+          if (feature.properties) {
+            return feature;
+          }
+        },
+        style: function (feature) {
+          return {
+            color: '#cde76c',
+            fillColor: '#cde76c',
+            stroke: false,
+            radius: 5
+          }
+        },
+        onEachFeature: function (feature, layer) {
+          layer.bindTooltip(`<b>${feature.properties.STORE_NAME}</b>`)
+        }
+      }).addTo(map);
+
+      stationLayer = L.geoJson(stations, {
+        // we convert to a layer
+        pointToLayer: function (feature, latlng) {
+          return L.circleMarker(latlng, commonStyles);
+        },
+        // exist in our second object
+        filter: function (feature) {
+          if (feature.properties.STATION_NU) {
+            return feature;
+          }
+        },
+        style: function (feature) {
+          return {
+            color: 'red',
+            fillColor: 'red',
+            stroke: false,
+            radius: 5
+          }
+        },
+        onEachFeature: function (feature, layer) {
+          layer.bindTooltip(`<b>${feature.properties.STATION_NU}</b>`)
+        }
+      }).addTo(map);
+      
+      map.on('click', function (e) {
+        // Loop through object containing geojson layers
+        console.log(e)
+        programLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+          console.log(layer);
+        if (distance > 1) {
+          layer.setStyle({
+            fillOpacity: .1,
+            opacity: .1
+          });
+        } else {
+          layer.setStyle({
+            fillOpacity: 1,
+            opacity: 1
+          });
+        }
+          layer.bindTooltip(`<b>${layer.feature.properties.ORGANIZATI}</b><br>I am ${distance.toLocaleString()} KM from where you clicked!`)
+      }),
+      stationLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+
+        if (distance > 1) {
+          layer.setStyle({
+            fillOpacity: .1,
+            opacity: .1
+          });
+        } else {
+          layer.setStyle({
+            fillOpacity: 1,
+            opacity: 1
+          });
+        }
+        layer.bindTooltip(`<b>${layer.feature.properties.STATION_NU}</b><br>I am ${distance.toLocaleString()} KM from where you clicked!`)
+      }),
+      storeLayer.eachLayer(function (layer) {
+        var distance = e.latlng.distanceTo(layer.getLatLng()) / 1000; // distance as km
+
+        if (distance > 1) {
+          layer.setStyle({
+            fillOpacity: .1,
+            opacity: .1
+          });
+        } else {
+          layer.setStyle({
+            fillOpacity: 1,
+            opacity: 1
+          });
+        }
+        layer.bindTooltip(`<b>${layer.feature.properties.STORE_NAME}</b><br>I am ${distance.toLocaleString()} KM from where you clicked!`)
+      });
+      });
+    // }
+
+    var sourcesLayers = {
+      "<b style='color:blue'>After School Programs</b>": programLayer,
+      "<b style='color:#cde76c'>Food Stores</b>": storeLayer,
+      "<b style='color:red'>Fire Stations</b>": stationLayer
+    }
+    L.control.layers(null, sourcesLayers, {
+      collapsed: false
+    }).addTo(map);
+
+  </script>
+
+</body>
+
+</html>
